@@ -1,6 +1,6 @@
 import cv2
 # 保存パスの指定
-save_path = "./images"
+save_path = "./"
 def main():
     # カメラのキャプチャを開始
     cam = cv2.VideoCapture(0)
