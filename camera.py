@@ -1,6 +1,6 @@
 import cv2
 # 保存パスの指定
-save_path = "./"
+save_path = "./images/"
 def main():
     # カメラのキャプチャを開始
     cam = cv2.VideoCapture(0)
@@ -17,12 +17,9 @@ def main():
         cnt = cv2.countNonZero(diff)
         if cnt > th:
             print("カメラに動きを検出")
-            cv2.imshow('PUSH ENTER KEY', img3)
             # 写真を画像 --- (*4)
             cv2.imwrite(save_path + str(num) + ".jpg", img3)
             num += 1
-        else:
-            cv2.imshow('PUSH ENTER KEY', diff)
         # 比較用の画像を保存 --- (*5)
         img1, img2, img3 = (img2, img3, get_image(cam))
     # 後始末
