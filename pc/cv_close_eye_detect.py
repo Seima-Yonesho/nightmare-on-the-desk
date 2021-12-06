@@ -5,6 +5,7 @@ import requests
 import os
 import json
 import base64
+from slacker import Slacker
 eye_cascPath = '../haarcascade_eye_tree_eyeglasses.xml'  #eye detect model
 face_cascPath = '../haarcascade_frontalface_alt.xml'  #face detect model
 faceCascade = cv2.CascadeClassifier(face_cascPath)
@@ -13,6 +14,8 @@ eyeCascade = cv2.CascadeClassifier(eye_cascPath)
 os.environ['ACCESS_URL'] = "http://c38b-219-75-227-237.ngrok.io"
 os.environ['USER'] = "うんぺろ"
 os.environ['SAVE_PATH'] = "../images/"
+os.environ['TOKEN'] = "xoxb-2817777618657-2828924448848-onO5o3l4Stn2y9yD5iTV4Jv1"
+os.environ['CHANNEL'] = 'random'
 
 def eyeDetect(len_eyes):
   global cnt
@@ -36,27 +39,64 @@ def sleepDetect(frame_tmp):
     sleepFlg = True
     image = os.environ['SAVE_PATH'] + str(num) + ".jpg"
     cv2.imwrite(image, frame_tmp)
-    # 画像ファイルを開いてbase64に変換
-    with open(image, 'br') as f1:
-      img_base64 = base64.b64encode(frame_tmp).decode('utf-8')
+    message = os.environ["USER"] + 'が眠りに落ちたようだ。'
+    # # 画像ファイルを開いてbase64に変換
+    # with open(image, 'br') as f1:
+    #   img_base64 = base64.b64encode(frame_tmp).decode('utf-8')
 
-    payload = {
-      'name' : os.environ['USER'],
-      'image' : img_base64
-    }
-    res = requests.post(os.environ["ACCESS_URL"] + '/sleep', data=json.dumps(payload))
+    # payload = {
+    #   'name' : os.environ['USER'],
+    #   'image' : img_base64
+    # }
+    # res = requests.post(os.environ["ACCESS_URL"] + '/sleep', data=json.dumps(payload))
+
+    slackBot(message, True)
+
   return
 
 def sleepLength():
   global sleepCnt
   global sleepFlg
-  payload = {'name': os.environ['USER']}
+  # payload = {'name': os.environ['USER']}
+  # if sleepFlg == True:
+  #   sleepCnt += 1
+  # elif sleepCnt > 0:
+  #   requests.post(os.environ["ACCESS_URL"] + '/wakeup', data=json.dumps(payload))
+  #   sleepCnt = 0
   if sleepFlg == True:
     sleepCnt += 1
   elif sleepCnt > 0:
-    requests.post(os.environ["ACCESS_URL"] + '/wakeup', data=json.dumps(payload))
+    print('Wake Up!!')
+    message = os.environ['USER'] + 'が眠りから覚めたようだ。'
+    slackBot(message, False)
     sleepCnt = 0
   return
+
+def slackBot(message, fileExist):
+  token = os.environ['TOKEN']
+  channel = os.environ['CHANNEL']
+
+  if fileExist == True:
+    file = os.environ['SAVE_PATH'] + '1.jpg'
+    files = {'file': open(file, 'rb')}
+    param = {
+      'token': token,
+      'channels': channel,
+      'filename': 'evidence',
+      # Botのメッセージ
+      'initial_comment': message,
+      # Slack上のタイトル
+      'title': "証拠だ！"
+    }
+    requests.post(url="https://slack.com/api/files.upload", params=param, files=files)
+  else:
+    param = {
+      'token': token,
+      'channel': channel,
+      # Botのメッセージ
+      'text': message,
+    }
+    requests.post('https://slack.com/api/chat.postMessage', headers={'Content-Type': 'application/json'}, params=param)
 
 def main():
   cap = cv2.VideoCapture(0)
