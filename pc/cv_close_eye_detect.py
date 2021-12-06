@@ -13,6 +13,7 @@ cap = cv2.VideoCapture(0)
 save_path = "../images/"
 cnt = 0
 num = 1
+sleepFlg = False
 
 while True:
   ret, img = cap.read()
@@ -42,21 +43,22 @@ while True:
         )
         # 目を閉じているか判定
         if len(eyes) == 0:
-          print('no eyes!!!')
           cnt += 1
         else:
-          print('eyes!!!')
+          sleepFlg = False
           cnt = 0
         frame_tmp = cv2.resize(frame_tmp, (400, 400), interpolation=cv2.INTER_LINEAR)
-        # 目を5秒以上閉じていると画像を保存
-        if cnt > 5:
+        cv2.imshow('Face Recognition', frame_tmp)
+        print(cnt)
+        # 目を2秒以上閉じていると画像を保存
+        if cnt > 20 and sleepFlg == False:
           print('sleep!!')
+          sleepFlg = True
           cv2.imwrite(save_path + str(num) + ".jpg", frame_tmp)
           num += 1
-        cv2.imshow('Face Recognition', frame_tmp)
+
     waitkey = cv2.waitKey(1)
     if waitkey == ord('q') or waitkey == ord('Q'):
       cv2.destroyAllWindows()
       break
-  time.sleep(1)
-      
+  time.sleep(0.1)
