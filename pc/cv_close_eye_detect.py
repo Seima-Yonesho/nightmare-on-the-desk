@@ -1,6 +1,6 @@
 import cv2
-eye_cascPath = './haarcascade_eye_tree_eyeglasses.xml'  #eye detect model
-face_cascPath = './haarcascade_frontalface_alt.xml'  #face detect model
+eye_cascPath = '../haarcascade_eye_tree_eyeglasses.xml'  #eye detect model
+face_cascPath = '../haarcascade_frontalface_alt.xml'  #face detect model
 faceCascade = cv2.CascadeClassifier(face_cascPath)
 eyeCascade = cv2.CascadeClassifier(eye_cascPath)
 # faceCascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_default.xml')
@@ -43,6 +43,7 @@ while True:
             else:
                 print('eyes!!!')
             frame_tmp = cv2.resize(frame_tmp, (400, 400), interpolation=cv2.INTER_LINEAR)
+            cv2.imshow('Face Recognition', frame_tmp)
             cv2.imwrite(save_path + str(num) + ".jpg", frame_tmp)
         waitkey = cv2.waitKey(1)
         if waitkey == ord('q') or waitkey == ord('Q'):
