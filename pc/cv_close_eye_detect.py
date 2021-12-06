@@ -14,7 +14,7 @@ eyeCascade = cv2.CascadeClassifier(eye_cascPath)
 os.environ['ACCESS_URL'] = "http://c38b-219-75-227-237.ngrok.io"
 os.environ['USER'] = "うんぺろ"
 os.environ['SAVE_PATH'] = "../images/"
-os.environ['TOKEN'] = "xoxb-2817777618657-2828924448848-onO5o3l4Stn2y9yD5iTV4Jv1"
+os.environ['TOKEN'] = ""
 os.environ['CHANNEL'] = 'random'
 
 def eyeDetect(len_eyes):
