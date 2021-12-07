@@ -6,16 +6,27 @@ import os
 import json
 import base64
 from slacker import Slacker
+import RPi.GPIO as GPIO
 eye_cascPath = '../haarcascade_eye_tree_eyeglasses.xml'  #eye detect model
 face_cascPath = '../haarcascade_frontalface_alt.xml'  #face detect model
 faceCascade = cv2.CascadeClassifier(face_cascPath)
 eyeCascade = cv2.CascadeClassifier(eye_cascPath)
 
-os.environ['ACCESS_URL'] = "http://c38b-219-75-227-237.ngrok.io"
 os.environ['USER'] = "うんぺろ"
 os.environ['SAVE_PATH'] = "../images/"
 os.environ['TOKEN'] = ""
 os.environ['CHANNEL'] = 'random'
+
+def outputSound():
+  global pin
+  GPIO.setmode(GPIO.BCM)
+  GPIO.setup(pin,GPIO.OUT,initial=GPIO.LOW)
+  p = GPIO.PWM(pin,1)
+  p.start(50)
+  p.ChangeFrequency(220)
+  time.sleep(3)
+  p.stop()
+  GPIO.cleanup()
 
 def eyeDetect(len_eyes):
   global cnt
@@ -41,6 +52,7 @@ def sleepDetect(frame_tmp):
     cv2.imwrite(image, frame_tmp)
     message = os.environ["USER"] + 'が眠りに落ちたようだ。'
     slackBot(message, True)
+    outputSound()
   return
 
 def sleepLength():
@@ -83,6 +95,7 @@ def slackBot(message, fileExist):
 
 def main():
   cap = cv2.VideoCapture(0)
+  cap.set(cv2.CAP_PROP_FPS, 32)
   while True:
     ret, img = cap.read()
     if ret:
@@ -124,4 +137,5 @@ if __name__ == '__main__':
   sleepFlg = False
   num = 1
   sleepCnt = 0
+  pin = 14
   main()
